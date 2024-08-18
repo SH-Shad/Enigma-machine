@@ -1,7 +1,8 @@
 import sys
 import string
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QMessageBox, QSpinBox
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QMessageBox, QSpinBox, QTabWidget
 from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt  # Import Qt for alignment options
 
 class Rotor:
     def __init__(self, wiring, ring_setting=0):
@@ -96,10 +97,21 @@ class EnigmaGUI(QWidget):
         # Set the window size
         self.resize(600, 600)  # Width, Height
 
+        # Create a tab widget
+        self.tabs = QTabWidget()
+        
+        # Create the main tab and the about tab
+        self.main_tab = QWidget()
+        self.about_tab = QWidget()
+        
+        self.tabs.addTab(self.main_tab, "Enigma Machine")
+        self.tabs.addTab(self.about_tab, "About")
+
+        # Layout for the main tab
+        main_layout = QVBoxLayout()
+
         # Define a font with a larger size
         font = QFont("Arial", 12)
-
-        layout = QVBoxLayout()
 
         # Number of Rotors Selection
         self.rotor_count_spinbox = QSpinBox()
@@ -112,7 +124,7 @@ class EnigmaGUI(QWidget):
         rotor_count_label.setFont(font)
         rotor_count_layout.addWidget(rotor_count_label)
         rotor_count_layout.addWidget(self.rotor_count_spinbox)
-        layout.addLayout(rotor_count_layout)
+        main_layout.addLayout(rotor_count_layout)
 
         # Rotor order input
         order_layout = QHBoxLayout()
@@ -120,10 +132,10 @@ class EnigmaGUI(QWidget):
         order_label.setFont(font)
         self.order_input = QLineEdit()
         self.order_input.setFont(font)
-        self.order_input.setPlaceholderText(f"e.g., '1 2 3..' within 1-100")  # Placeholder text added
+        self.order_input.setPlaceholderText("e.g., '1 10 100' within 1-100")  # Placeholder text added
         order_layout.addWidget(order_label)
         order_layout.addWidget(self.order_input)
-        layout.addLayout(order_layout)
+        main_layout.addLayout(order_layout)
 
         # Rotor positions input
         position_layout = QHBoxLayout()
@@ -131,10 +143,10 @@ class EnigmaGUI(QWidget):
         position_label.setFont(font)
         self.position_input = QLineEdit()
         self.position_input.setFont(font)
-        self.position_input.setPlaceholderText("e.g., '1 2 3..' within 0-25")  # Placeholder text added
+        self.position_input.setPlaceholderText("e.g., '5 18 3' within 0-25")  # Placeholder text added
         position_layout.addWidget(position_label)
         position_layout.addWidget(self.position_input)
-        layout.addLayout(position_layout)
+        main_layout.addLayout(position_layout)
 
         # Rotor notches input
         notch_layout = QHBoxLayout()
@@ -142,10 +154,10 @@ class EnigmaGUI(QWidget):
         notch_label.setFont(font)
         self.notch_input = QLineEdit()
         self.notch_input.setFont(font)
-        self.notch_input.setPlaceholderText("e.g., '1 2 3' within 0-25")  # Placeholder text added
+        self.notch_input.setPlaceholderText("e.g., '16 4 21' within 0-25")  # Placeholder text added
         notch_layout.addWidget(notch_label)
         notch_layout.addWidget(self.notch_input)
-        layout.addLayout(notch_layout)
+        main_layout.addLayout(notch_layout)
 
         # Plugboard settings
         plugboard_layout = QHBoxLayout()
@@ -156,7 +168,7 @@ class EnigmaGUI(QWidget):
         self.plugboard_input.setPlaceholderText("e.g., AB CD EF..")  # Placeholder text added
         plugboard_layout.addWidget(plugboard_label)
         plugboard_layout.addWidget(self.plugboard_input)
-        layout.addLayout(plugboard_layout)
+        main_layout.addLayout(plugboard_layout)
 
         # Message input
         message_layout = QVBoxLayout()
@@ -166,7 +178,7 @@ class EnigmaGUI(QWidget):
         self.message_input.setFont(font)
         message_layout.addWidget(message_label)
         message_layout.addWidget(self.message_input)
-        layout.addLayout(message_layout)
+        main_layout.addLayout(message_layout)
 
         # Buttons for encryption and decryption
         button_layout = QHBoxLayout()
@@ -182,15 +194,28 @@ class EnigmaGUI(QWidget):
         self.decrypt_button.clicked.connect(self.decrypt_message)
         button_layout.addWidget(self.decrypt_button)
 
-        layout.addLayout(button_layout)
+        main_layout.addLayout(button_layout)
 
         # Output area
         self.output_area = QTextEdit()
         self.output_area.setFont(font)
         self.output_area.setReadOnly(True)
-        layout.addWidget(self.output_area)
+        main_layout.addWidget(self.output_area)
 
-        self.setLayout(layout)
+        self.main_tab.setLayout(main_layout)
+
+        # About Tab Content
+        about_layout = QVBoxLayout()
+        about_label = QLabel("Enigma Machine\nVersion 1.0\n\nCreated by: Your Name\n\nThis application simulates the functionality of the Enigma Machine, a cipher device used by the Germans during World War II.")
+        about_label.setFont(font)
+        about_label.setAlignment(Qt.AlignCenter)  # Fixed NameError by importing Qt
+        about_layout.addWidget(about_label)
+        self.about_tab.setLayout(about_layout)
+
+        # Set the layout for the main widget
+        final_layout = QVBoxLayout()
+        final_layout.addWidget(self.tabs)
+        self.setLayout(final_layout)
 
     def get_rotors(self):
         available_rotors = {
